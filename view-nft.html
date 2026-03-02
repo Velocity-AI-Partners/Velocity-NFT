@@ -114,6 +114,9 @@
       overflow: hidden;
       animation: fadeUp 0.7s ease-out;
     }
+    .nft-details-card {
+      margin-top: 12px;
+    }
 
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(24px); }
@@ -1315,10 +1318,8 @@
     <div class="sz-location">Westborough, MA</div>
   </div>
 
-  <!-- NFT Card -->
+  <!-- NFT Image Card -->
   <div class="nft-card tier-gold" id="nftCard">
-
-    <!-- Artwork -->
     <div class="artwork-wrap" id="artworkWrap">
       <!-- Placeholder badge (centered) — AI image overlays this when available -->
       <div class="badge-artwork" id="badgeArtwork">
@@ -1341,53 +1342,17 @@
         <div class="badge-watermark">STRETCH ZONE</div>
       </div>
     </div>
-
-    <!-- Book Button (directly below image) -->
-    <div style="padding: 16px 20px 0;">
-      <a href="#" class="btn btn-book" id="bookBtn" onclick="event.preventDefault(); toggleBookingSection();" style="margin-top: 0;">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-        Book Your Next Session
-      </a>
-    </div>
-
-    <!-- Details -->
-    <div class="card-body">
-      <div class="card-title" id="cardTitle">Achievement Unlocked</div>
-      <div class="card-collection">Stretch Zone Westborough Achievements</div>
-      <div class="card-divider"></div>
-
-      <div class="info-grid">
-        <div class="info-item">
-          <span class="info-label">Awarded To</span>
-          <span class="info-value" id="awardedTo">Sarah M.</span>
-        </div>
-        <div class="info-item">
-          <span class="info-label">Date</span>
-          <span class="info-value" id="awardDate">Feb 16, 2026</span>
-        </div>
-        <div class="info-item">
-          <span class="info-label">Milestone</span>
-          <span class="info-value" id="milestoneVal">75 Visits</span>
-        </div>
-        <div class="info-item">
-          <span class="info-label">Network</span>
-          <span class="info-value">Polygon</span>
-        </div>
-      </div>
-
-      <div class="chain-badge">
-        <div class="chain-dot"></div>
-        <span class="chain-text">Verified on Blockchain</span>
-      </div>
-
-      <p class="card-desc" id="cardDesc">
-        This digital collectible celebrates your incredible commitment to wellness at Stretch Zone Westborough.
-      </p>
-
-    </div>
   </div>
 
-  <!-- Inline Booking Section (collapsible, below NFT card) -->
+  <!-- Book Button (directly below image) -->
+  <div style="margin-top: 12px;">
+    <a href="#" class="btn btn-book" id="bookBtn" onclick="event.preventDefault(); toggleBookingSection();" style="margin-top: 0;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      Book Your Next Session
+    </a>
+  </div>
+
+  <!-- Inline Booking Section (collapsible, expands below book button) -->
   <div id="bookingSection" class="booking-section">
     <div class="booking-section-inner">
 
@@ -1440,6 +1405,44 @@
           <span id="submitText">Confirm Booking</span>
         </button>
       </div>
+
+    </div>
+  </div>
+
+  <!-- NFT Details Card -->
+  <div class="nft-card nft-details-card tier-gold" id="nftDetailsCard">
+    <div class="card-body">
+      <div class="card-title" id="cardTitle">Achievement Unlocked</div>
+      <div class="card-collection">Stretch Zone Westborough Achievements</div>
+      <div class="card-divider"></div>
+
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="info-label">Awarded To</span>
+          <span class="info-value" id="awardedTo">Sarah M.</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Date</span>
+          <span class="info-value" id="awardDate">Feb 16, 2026</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Milestone</span>
+          <span class="info-value" id="milestoneVal">75 Visits</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Network</span>
+          <span class="info-value">Polygon</span>
+        </div>
+      </div>
+
+      <div class="chain-badge">
+        <div class="chain-dot"></div>
+        <span class="chain-text">Verified on Blockchain</span>
+      </div>
+
+      <p class="card-desc" id="cardDesc">
+        This digital collectible celebrates your incredible commitment to wellness at Stretch Zone Westborough.
+      </p>
 
     </div>
   </div>
@@ -1757,8 +1760,10 @@ function render(data) {
   const card = document.getElementById('nftCard');
   const loc = getLocation(data.loc);
 
-  // Tier class
+  // Tier class (image card + details card)
   card.className = 'nft-card ' + tier.css;
+  var detailsCard = document.getElementById('nftDetailsCard');
+  if (detailsCard) detailsCard.className = 'nft-card nft-details-card ' + tier.css;
 
   // Badge artwork (generic congratulations placeholder)
   // Tier-specific details show in card below; badge is generic for all award types
