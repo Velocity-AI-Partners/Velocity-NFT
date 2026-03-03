@@ -1293,6 +1293,42 @@
     }
     .bk-popup-close:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(46, 139, 87, 0.3); }
 
+    .bk-pricing-box {
+      background: rgba(46, 139, 87, 0.08);
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-top: 16px;
+      text-align: left;
+    }
+    .bk-pricing-box .bk-pricing-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .bk-pricing-box table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    .bk-pricing-box td {
+      padding: 3px 0;
+      color: var(--text-secondary);
+    }
+    .bk-pricing-box td:last-child {
+      text-align: right;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    .bk-pricing-box .bk-pricing-note {
+      font-size: 12px;
+      color: var(--sz-green);
+      margin-top: 8px;
+      font-weight: 600;
+    }
+
     .bk-hidden { display: none !important; }
 
     @media (max-width: 400px) {
@@ -1397,6 +1433,7 @@
         <div class="summary-row"><span class="label">Time</span><span class="value" id="summaryTime"></span></div>
         <div class="summary-row" id="summaryClassRow" style="display:none;"><span class="label">Class</span><span class="value" id="summaryClass"></span></div>
         <div class="summary-row" id="summaryInstructorRow" style="display:none;"><span class="label">Instructor</span><span class="value" id="summaryInstructor"></span></div>
+        <div id="bkSummaryPricing" style="display:none;"></div>
         <div class="form-group">
           <label for="inputNotes">Notes (optional)</label>
           <textarea id="inputNotes" placeholder="Any special requests..."></textarea>
@@ -2045,6 +2082,16 @@ var BOOKING_LOCATIONS = {
     clubreadyStoreId: 15077,
     crm: 'clubready',
     hours: { weekday: [8, 19], saturday: [10, 15], sunday: null },
+    leadOffer: { label: 'FREE First Stretch Assessment', detail: 'Includes consultation, 30-min stretch, and membership review' },
+    pricing: {
+      title: 'Member Session Pricing',
+      rows: [
+        ['1x/week (4/mo)', '$50/session'],
+        ['2x/week (8/mo)', '$45/session'],
+        ['3x/week (12/mo)', '$40/session'],
+        ['Drop-in', '$85/session'],
+      ],
+    },
   },
   'stretch-zone-west-boylston': {
     name: 'Stretch Zone',
@@ -2058,6 +2105,16 @@ var BOOKING_LOCATIONS = {
     clubreadyStoreId: 14803,
     crm: 'clubready',
     hours: { weekday: [8, 19], saturday: [10, 15], sunday: null },
+    leadOffer: { label: 'FREE First Stretch Assessment', detail: 'Includes consultation, 30-min stretch, and membership review' },
+    pricing: {
+      title: 'Member Session Pricing',
+      rows: [
+        ['1x/week (4/mo)', '$50/session'],
+        ['2x/week (8/mo)', '$45/session'],
+        ['3x/week (12/mo)', '$40/session'],
+        ['Drop-in', '$85/session'],
+      ],
+    },
   },
   'stretchlab-carlsbad': {
     name: 'StretchLab',
@@ -2071,6 +2128,16 @@ var BOOKING_LOCATIONS = {
     clubreadyStoreId: 12727,
     crm: 'clubready',
     hours: { weekday: [9, 20], saturday: [9, 15], sunday: [10, 14] },
+    leadOffer: { label: 'Intro Stretch: $39 (25 min) or $59 (50 min)', detail: 'Includes MAPS assessment (Mobility, Activation, Posture, Symmetry)' },
+    pricing: {
+      title: 'Member Session Pricing',
+      rows: [
+        ['25 min membership', 'from $52/session'],
+        ['50 min membership', 'from $81/session'],
+        ['25 min single', '$65'],
+        ['50 min single', '$125'],
+      ],
+    },
   },
   'integrated-martial-arts-westborough': {
     name: 'IMA Fitness',
@@ -2083,6 +2150,7 @@ var BOOKING_LOCATIONS = {
     email: 'info@integratedmartialarts.com',
     crm: 'spark',
     hours: { weekday: [6, 20], saturday: [10, 14], sunday: null },
+    leadOffer: { label: '$19.99 for 3 Trial Sessions', detail: 'Available for adults and kids' },
   },
   'integrated-martial-arts-worcester': {
     name: 'IMA Fitness',
@@ -2095,6 +2163,7 @@ var BOOKING_LOCATIONS = {
     email: 'info@imaworcester.com',
     crm: 'wellnessliving',
     hours: { weekday: [9, 20], saturday: [9, 14], sunday: [10, 12] },
+    leadOffer: { label: '$19.99 for 3 Trial Sessions', detail: 'Available for adults and kids' },
   },
   'stretch-zone-dfw': {
     name: 'Stretch Zone',
@@ -2107,6 +2176,12 @@ var BOOKING_LOCATIONS = {
     email: 'southlake@stretchzone.com',
     crm: 'clubready',
     hours: { weekday: [7, 20], saturday: [8, 16], sunday: [11, 17] },
+    leadOffer: { label: 'FREE Initial Demo Session', detail: 'About 45-60 minutes, just bring comfortable clothing and socks' },
+    pricing: {
+      title: 'Session Pricing',
+      rows: [],
+      note: 'Pricing reviewed in-studio after your complimentary demo session',
+    },
   },
   'stretch-zone-baton-rouge': {
     name: 'Stretch Zone',
@@ -2119,6 +2194,17 @@ var BOOKING_LOCATIONS = {
     email: 'bocage@stretchzone.com',
     crm: 'clubready',
     hours: { weekday: [7, 19], saturday: [8, 16], sunday: [11, 17] },
+    leadOffer: { label: 'FREE First Stretch Assessment', detail: 'Includes consultation, 30-min stretch, and membership review' },
+    pricing: {
+      title: 'Member Session Pricing',
+      rows: [
+        ['Basic (2/mo)', '$139/mo'],
+        ['1x/week (4/mo)', '$240/mo'],
+        ['2x/week (8/mo)', '$440/mo'],
+        ['3x/week (12/mo)', '$600/mo'],
+        ['Drop-in', '$95/session'],
+      ],
+    },
   },
 };
 
@@ -2294,7 +2380,7 @@ var BK_IMA_SCHEDULES = {
 // Booking state
 var bkCurrentLocation = null;
 var bkCurrentLocationSlug = '';
-var bkUserInfo = { name: '', email: '', phone: '', leadId: '' };
+var bkUserInfo = { name: '', email: '', phone: '', leadId: '', memberId: '' };
 var bkDateOffset = 0;
 var bkSelectedDate = null;
 var bkSelectedSlot = null;
@@ -2345,6 +2431,7 @@ function initBooking() {
   bkUserInfo.email = params.get('email') || '';
   bkUserInfo.phone = params.get('phone') || '';
   bkUserInfo.leadId = params.get('lid') || params.get('leadId') || '';
+  bkUserInfo.memberId = params.get('mid') || params.get('memberId') || '';
 
   bkBuildDateCarousel();
 }
@@ -2687,6 +2774,28 @@ function bkUpdateSelectionSummary() {
   } else {
     document.getElementById('summaryInstructorRow').style.display = 'none';
   }
+
+  // Show member pricing (NFT page is members only)
+  var pricingEl = document.getElementById('bkSummaryPricing');
+  var html = '';
+  var p = bkCurrentLocation.pricing;
+  if (p) {
+    html = '<div class="bk-pricing-box">';
+    html += '<div class="bk-pricing-title">' + bkEscapeHtml(p.title) + '</div>';
+    if (p.rows && p.rows.length > 0) {
+      html += '<table>';
+      for (var i = 0; i < p.rows.length; i++) {
+        html += '<tr><td>' + bkEscapeHtml(p.rows[i][0]) + '</td><td>' + bkEscapeHtml(p.rows[i][1]) + '</td></tr>';
+      }
+      html += '</table>';
+    }
+    if (p.note) {
+      html += '<div class="bk-pricing-note">' + bkEscapeHtml(p.note) + '</div>';
+    }
+    html += '</div>';
+  }
+  pricingEl.innerHTML = html;
+  pricingEl.style.display = html ? 'block' : 'none';
 }
 
 function bkUpdateSubmitButton() {
