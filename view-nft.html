@@ -1156,6 +1156,14 @@
       font-weight: 700;
       color: var(--text-primary);
     }
+    .bk-summary-note {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--sz-green-light);
+      margin: 8px 0 4px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border-subtle);
+    }
 
     /* Notes field (dark) */
     .booking-card .form-group { margin-top: 16px; margin-bottom: 14px; }
@@ -1429,11 +1437,15 @@
       <!-- Selection Summary + Notes + Submit -->
       <div class="booking-card" id="selectionSummary" style="display:none;">
         <div class="booking-card-title">Your Selection</div>
+        <div class="summary-row" id="summaryNameRow" style="display:none;"><span class="label">Client</span><span class="value" id="summaryName"></span></div>
         <div class="summary-row"><span class="label">Date</span><span class="value" id="summaryDate"></span></div>
         <div class="summary-row"><span class="label">Time</span><span class="value" id="summaryTime"></span></div>
         <div class="summary-row" id="summaryClassRow" style="display:none;"><span class="label">Class</span><span class="value" id="summaryClass"></span></div>
         <div class="summary-row" id="summaryInstructorRow" style="display:none;"><span class="label">Instructor</span><span class="value" id="summaryInstructor"></span></div>
+        <div class="summary-row" id="summaryPlanRow" style="display:none;"><span class="label">Plan</span><span class="value" id="summaryPlan"></span></div>
+        <div class="summary-row" id="summaryCreditsRow" style="display:none;"><span class="label">Credits</span><span class="value" id="summaryCredits"></span></div>
         <div id="bkSummaryPricing" style="display:none;"></div>
+        <div class="bk-summary-note" id="summaryPayNote" style="display:none;">Book online, pay in store</div>
         <div class="form-group">
           <label for="inputNotes">Notes (optional)</label>
           <textarea id="inputNotes" placeholder="Any special requests..."></textarea>
@@ -2065,6 +2077,7 @@ function demoSwitch() {
 var BK_CONFIG = {
   bookingWebhook: 'https://velocityaipartners.app.n8n.cloud/webhook/0c41acc9-33d5-467e-9182-6f39ceaa9a8e',
   availabilityWebhook: 'https://velocityaipartners.app.n8n.cloud/webhook/booking-availability',
+  memberInfoApi: 'https://lead-scraper-production.up.railway.app/api/member-info',
   daysAhead: 14,
 };
 
@@ -2387,6 +2400,10 @@ var bkSelectedSlot = null;
 var bkAvailableSlots = [];
 var bkInitialized = false;
 
+// Dynamic member info (populated by API call)
+window._bkMemberPlan = null;
+window._bkMemberCredits = null;
+
 function toggleBookingSection() {
   var section = document.getElementById('bookingSection');
   var isExpanded = section.classList.contains('expanded');
@@ -2434,6 +2451,11 @@ function initBooking() {
   bkUserInfo.memberId = params.get('mid') || params.get('memberId') || '';
 
   bkBuildDateCarousel();
+
+  // Fetch member info if member ID present and location is ClubReady
+  if (bkUserInfo.memberId && bkCurrentLocation.crm === 'clubready') {
+    bkFetchMemberInfo(bkCurrentLocationSlug, bkUserInfo.memberId);
+  }
 }
 
 // Date carousel
@@ -2746,6 +2768,14 @@ function bkUpdateSelectionSummary() {
 
   el.style.display = 'block';
 
+  // Show client name if available
+  if (bkUserInfo.name) {
+    document.getElementById('summaryName').textContent = bkUserInfo.name;
+    document.getElementById('summaryNameRow').style.display = 'flex';
+  } else {
+    document.getElementById('summaryNameRow').style.display = 'none';
+  }
+
   var d = new Date(bkSelectedDate + 'T12:00:00');
   var dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   var monthNames = [
@@ -2775,7 +2805,21 @@ function bkUpdateSelectionSummary() {
     document.getElementById('summaryInstructorRow').style.display = 'none';
   }
 
-  // Show member pricing (NFT page is members only)
+  // Show dynamic plan/credits if fetched from API
+  if (window._bkMemberPlan) {
+    document.getElementById('summaryPlan').textContent = window._bkMemberPlan;
+    document.getElementById('summaryPlanRow').style.display = 'flex';
+  } else {
+    document.getElementById('summaryPlanRow').style.display = 'none';
+  }
+  if (window._bkMemberCredits != null) {
+    document.getElementById('summaryCredits').textContent = window._bkMemberCredits + ' remaining';
+    document.getElementById('summaryCreditsRow').style.display = 'flex';
+  } else {
+    document.getElementById('summaryCreditsRow').style.display = 'none';
+  }
+
+  // Show static member pricing (from location config)
   var pricingEl = document.getElementById('bkSummaryPricing');
   var html = '';
   var p = bkCurrentLocation.pricing;
@@ -2792,11 +2836,13 @@ function bkUpdateSelectionSummary() {
     if (p.note) {
       html += '<div class="bk-pricing-note">' + bkEscapeHtml(p.note) + '</div>';
     }
-    html += '<div class="bk-pricing-note" style="margin-top:8px;font-weight:600;">Book Online, Pay in Store</div>';
     html += '</div>';
   }
   pricingEl.innerHTML = html;
   pricingEl.style.display = html ? 'block' : 'none';
+
+  // Always show "Book online, pay in store" for NFT page (members only)
+  document.getElementById('summaryPayNote').style.display = 'block';
 }
 
 function bkUpdateSubmitButton() {
@@ -3016,6 +3062,42 @@ function bkEscapeHtml(str) {
     document.getElementById('artworkWrap').addEventListener('click', demoSwitch);
   }
 })();
+
+// Member info fetch (ClubReady only)
+async function bkFetchMemberInfo(locationSlug, memberId) {
+  var slugMap = {
+    'stretch-zone-westborough': 'sz-westborough',
+    'stretch-zone-west-boylston': 'sz-west-boylston',
+    'stretchlab-carlsbad': 'stretchlab-carlsbad',
+    'stretch-zone-dfw': 'sz-dfw',
+    'stretch-zone-baton-rouge': 'sz-baton-rouge',
+  };
+  var apiSlug = slugMap[locationSlug] || locationSlug;
+
+  try {
+    var url = BK_CONFIG.memberInfoApi + '?location=' + encodeURIComponent(apiSlug) + '&member_id=' + encodeURIComponent(memberId);
+    var resp = await fetch(url);
+    if (!resp.ok) return;
+    var data = await resp.json();
+
+    // Derive plan from membershipType or creditDetails
+    if (data.membershipType) {
+      window._bkMemberPlan = data.membershipType;
+    } else if (data.creditDetails && data.creditDetails.length > 0) {
+      var counts = {};
+      data.creditDetails.forEach(function(c) { counts[c] = (counts[c] || 0) + 1; });
+      var parts = Object.keys(counts).map(function(k) { return counts[k] + 'x ' + k; });
+      window._bkMemberPlan = parts.join(', ');
+    }
+    if (data.credits != null) window._bkMemberCredits = data.credits;
+    if (data.name && !bkUserInfo.name) bkUserInfo.name = data.name;
+
+    // Re-render summary if already visible
+    if (bkSelectedDate && bkSelectedSlot) bkUpdateSelectionSummary();
+  } catch (e) {
+    // Silently fail; member info is optional enhancement
+  }
+}
 </script>
 </body>
 </html>
