@@ -2173,7 +2173,7 @@ var BOOKING_LOCATIONS = {
     pricing: {
       title: 'Session Pricing',
       rows: [],
-      note: 'Pricing reviewed in-studio after your complimentary demo session',
+      note: 'Your first session is FREE',
     },
   },
   'stretch-zone-baton-rouge': {
@@ -2810,9 +2810,21 @@ function bkUpdateSelectionSummary() {
     html = '<div class="bk-pricing-box">';
     html += '<div class="bk-pricing-title">' + bkEscapeHtml(p.title) + '</div>';
     if (p.rows && p.rows.length > 0) {
+      // Filter pricing rows to match selected session type if available
+      var filteredRows = p.rows;
+      if (bkSelectedSlot && bkSelectedSlot.type) {
+        var slotType = (bkSelectedSlot.type || '').toLowerCase();
+        var is25 = slotType.indexOf('25') !== -1;
+        var is50 = slotType.indexOf('50') !== -1;
+        if (is25 || is50) {
+          var keyword = is25 ? '25' : '50';
+          filteredRows = p.rows.filter(function(row) { return row[0].indexOf(keyword) !== -1; });
+          if (filteredRows.length === 0) filteredRows = p.rows;
+        }
+      }
       html += '<table>';
-      for (var i = 0; i < p.rows.length; i++) {
-        html += '<tr><td>' + bkEscapeHtml(p.rows[i][0]) + '</td><td>' + bkEscapeHtml(p.rows[i][1]) + '</td></tr>';
+      for (var i = 0; i < filteredRows.length; i++) {
+        html += '<tr><td>' + bkEscapeHtml(filteredRows[i][0]) + '</td><td>' + bkEscapeHtml(filteredRows[i][1]) + '</td></tr>';
       }
       html += '</table>';
     }
