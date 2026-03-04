@@ -2095,6 +2095,7 @@ var BOOKING_LOCATIONS = {
     clubreadyStoreId: 15077,
     crm: 'clubready',
     hours: { weekday: [8, 19], saturday: [10, 15], sunday: null },
+    daysAhead: 2,
     leadOffer: { label: 'FREE First Stretch Assessment', detail: 'Includes consultation, 30-min stretch, and membership review' },
     pricing: {
       title: 'Member Session Pricing',
@@ -2118,6 +2119,7 @@ var BOOKING_LOCATIONS = {
     clubreadyStoreId: 14803,
     crm: 'clubready',
     hours: { weekday: [8, 19], saturday: [10, 15], sunday: null },
+    daysAhead: 2,
     leadOffer: { label: 'FREE First Stretch Assessment', detail: 'Includes consultation, 30-min stretch, and membership review' },
     pricing: {
       title: 'Member Session Pricing',
@@ -2141,6 +2143,7 @@ var BOOKING_LOCATIONS = {
     clubreadyStoreId: 12727,
     crm: 'clubready',
     hours: { weekday: [9, 20], saturday: [9, 15], sunday: [10, 14] },
+    daysAhead: 2,
     leadOffer: { label: 'Intro Stretch: $39 (25 min) or $59 (50 min)', detail: 'Includes MAPS assessment (Mobility, Activation, Posture, Symmetry)' },
     pricing: {
       title: 'Member Session Pricing',
@@ -2477,10 +2480,12 @@ function bkBuildDateCarousel() {
 
   document.getElementById('dateNavLabel').textContent =
     months[startDate.getMonth()] + ' ' + startDate.getFullYear();
-  document.getElementById('datePrev').disabled = (bkDateOffset <= 0);
-  document.getElementById('dateNext').disabled = (bkDateOffset >= BK_CONFIG.daysAhead - 7);
+  var maxDays = (bkCurrentLocation && bkCurrentLocation.daysAhead) || BK_CONFIG.daysAhead;
 
-  for (var i = 0; i < BK_CONFIG.daysAhead; i++) {
+  document.getElementById('datePrev').disabled = (bkDateOffset <= 0);
+  document.getElementById('dateNext').disabled = (bkDateOffset >= maxDays - 7);
+
+  for (var i = 0; i < maxDays; i++) {
     var d = new Date(startDate);
     d.setDate(d.getDate() + i);
     d.setHours(0, 0, 0, 0);
@@ -2525,7 +2530,8 @@ function bkBuildDateCarousel() {
 }
 
 function bkShiftDates(offset) {
-  bkDateOffset = Math.max(0, Math.min(BK_CONFIG.daysAhead - 7, bkDateOffset + offset));
+  var maxDays = (bkCurrentLocation && bkCurrentLocation.daysAhead) || BK_CONFIG.daysAhead;
+  bkDateOffset = Math.max(0, Math.min(maxDays - 7, bkDateOffset + offset));
   bkSelectedDate = null;
   bkSelectedSlot = null;
   bkUpdateSelectionSummary();
