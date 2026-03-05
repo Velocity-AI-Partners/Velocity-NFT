@@ -1343,6 +1343,15 @@
       .slots-grid { grid-template-columns: 1fr 1fr; }
       .date-item { min-width: 56px; padding: 8px 6px; }
     }
+
+    /* Calendar buttons in confirmation popup */
+    .cal-buttons { margin-top: 16px; border-top: 1px solid #D5D9D9; padding-top: 16px; }
+    .cal-buttons .cal-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #888C8C; margin-bottom: 10px; }
+    .cal-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 13px; margin: 8px 0; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; text-decoration: none; font-family: inherit; cursor: pointer; transition: transform 0.2s ease; color: #fff; }
+    .cal-btn:active { transform: scale(0.98); }
+    .cal-btn-google { background: #4285F4; }
+    .cal-btn-apple { background: #0F1111; }
+    .cal-loading { font-size: 13px; color: #888C8C; padding: 8px 0; }
   </style>
 </head>
 <body>
@@ -1528,6 +1537,7 @@
       <div class="bk-popup-icon">&#10003;</div>
       <h2 id="bkPopupTitle">You're All Set!</h2>
       <p class="bk-popup-detail" id="bkPopupDetail"></p>
+      <div id="calendarButtons"></div>
       <button class="bk-popup-close" onclick="document.getElementById('bkPopupOverlay').classList.remove('visible')">Done</button>
     </div>
   </div>
@@ -3011,6 +3021,13 @@ function bkShowConfirmation(payload, result) {
   document.getElementById('bkPopupDetail').innerHTML = detail;
   document.getElementById('bkPopupOverlay').classList.add('visible');
 
+  // Add to Calendar buttons
+  var calContainer = document.getElementById('calendarButtons');
+  if (calContainer) {
+    calContainer.innerHTML = '<div class="cal-loading">Loading calendar options...</div>';
+    fetchCalendarLinks({ date: payload.date, time: payload.time, timezone: bkCurrentLocation.timezone, locationName: bkCurrentLocation.displayName, locationSlug: bkCurrentLocationSlug });
+  }
+
   // Reset submit button
   document.getElementById('submitBtn').disabled = false;
   document.getElementById('submitText').textContent = 'Confirm Booking';
@@ -3026,6 +3043,10 @@ function bkShowBookingError(msg) {
   document.getElementById('bkPopupTitle').textContent = 'Booking Issue';
   document.getElementById('bkPopupDetail').innerHTML = detail;
   document.getElementById('bkPopupOverlay').classList.add('visible');
+
+  // Clear calendar buttons on error
+  var calEl = document.getElementById('calendarButtons');
+  if (calEl) calEl.innerHTML = '';
 
   document.getElementById('submitBtn').disabled = false;
   document.getElementById('submitText').textContent = 'Confirm Booking';
@@ -3172,6 +3193,84 @@ async function bkFetchMemberInfo(locationSlug, memberId) {
   } catch (e) {
     // Silently fail; member info is optional enhancement
   }
+}
+
+// Add to Calendar helper
+async function fetchCalendarLinks(payload) {
+  var container = document.getElementById('calendarButtons');
+  if (!container) return;
+
+  var ADDRESS_MAP = {
+    'stretch-zone-westborough': '600 Union St Suite 102, Westborough, MA 01581',
+    'sz-westborough': '600 Union St Suite 102, Westborough, MA 01581',
+    'stretch-zone-west-boylston': '342 W Boylston St, West Boylston, MA 01583',
+    'sz-west-boylston': '342 W Boylston St, West Boylston, MA 01583',
+    'stretchlab-carlsbad': '1850 Marron Rd Suite 102, Carlsbad, CA 92008',
+    'stretch-zone-dfw': '405 N Carroll Ave, Southlake, TX 76092',
+    'sz-dfw': '405 N Carroll Ave, Southlake, TX 76092',
+    'stretch-zone-baton-rouge': '7575 Jefferson Hwy Suite E, Baton Rouge, LA 70806',
+    'sz-baton-rouge': '7575 Jefferson Hwy Suite E, Baton Rouge, LA 70806',
+    'integrated-martial-arts-westborough': '227 Turnpike Rd Suite C, Westborough, MA 01581',
+    'ima-westborough': '227 Turnpike Rd Suite C, Westborough, MA 01581',
+    'integrated-martial-arts-worcester': '342A W Boylston St, West Boylston, MA 01583',
+    'ima-worcester': '342A W Boylston St, West Boylston, MA 01583',
+  };
+  var PHONE_MAP = {
+    'stretch-zone-westborough': '(508) 329-1134',
+    'sz-westborough': '(508) 329-1134',
+    'stretch-zone-west-boylston': '(774) 261-4238',
+    'sz-west-boylston': '(774) 261-4238',
+    'stretchlab-carlsbad': '(760) 283-7126',
+    'stretch-zone-dfw': '(817) 612-1666',
+    'sz-dfw': '(817) 612-1666',
+    'stretch-zone-baton-rouge': '(225) 456-2734',
+    'sz-baton-rouge': '(225) 456-2734',
+    'integrated-martial-arts-westborough': '(774) 772-4759',
+    'ima-westborough': '(774) 772-4759',
+    'integrated-martial-arts-worcester': '(508) 251-9469',
+    'ima-worcester': '(508) 251-9469',
+  };
+
+  var MONTHS_MAP = {January:'01',February:'02',March:'03',April:'04',May:'05',June:'06',July:'07',August:'08',September:'09',October:'10',November:'11',December:'12'};
+  var isoDate = '';
+  var dateStr = payload.date || '';
+  var dm = dateStr.match(/(\w+)\s+(\d+),?\s*(\d{4})/);
+  if (dm) isoDate = dm[3] + '-' + MONTHS_MAP[dm[1]] + '-' + dm[2].padStart(2, '0');
+
+  var isoTime = '';
+  var timeStr = payload.time || '';
+  var tm = timeStr.match(/(\d+):(\d+)\s*(AM|PM)/i);
+  if (tm) {
+    var h = parseInt(tm[1]);
+    if (tm[3].toUpperCase() === 'PM' && h !== 12) h += 12;
+    if (tm[3].toUpperCase() === 'AM' && h === 12) h = 0;
+    isoTime = h.toString().padStart(2, '0') + ':' + tm[2];
+  }
+
+  if (!isoDate || !isoTime) { container.innerHTML = ''; return; }
+
+  var tz = payload.timezone || 'America/New_York';
+  var locName = payload.locationName || '';
+  var locSlug = payload.locationSlug || '';
+  var addr = ADDRESS_MAP[locSlug] || '';
+  var phone = PHONE_MAP[locSlug] || '';
+  var desc = phone ? 'Phone: ' + phone : '';
+
+  try {
+    var resp = await fetch('https://jjckotsrhuxxftwmdlwc.supabase.co/functions/v1/add-to-calendar', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-secret': 'vcal_k8m2p4x7w9' },
+      body: JSON.stringify({ title: 'Session at ' + locName, event_date: isoDate, event_time: isoTime, duration_min: 60, location_name: locName, location_address: addr, description: desc, timezone: tz }),
+    });
+    var data = await resp.json();
+    if (data.gcal_url || data.ics_url) {
+      var html = '<div class="cal-buttons"><div class="cal-label">Add to Calendar</div>';
+      if (data.gcal_url) html += '<a class="cal-btn cal-btn-google" href="' + data.gcal_url + '" target="_blank" rel="noopener">&#128197; Google Calendar</a>';
+      if (data.ics_url) html += '<a class="cal-btn cal-btn-apple" href="' + data.ics_url + '">&#128198; Apple / Outlook</a>';
+      html += '</div>';
+      container.innerHTML = html;
+    } else { container.innerHTML = ''; }
+  } catch (e) { container.innerHTML = ''; }
 }
 </script>
 </body>
