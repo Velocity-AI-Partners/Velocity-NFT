@@ -1352,6 +1352,10 @@
     .cal-btn-google { background: #4285F4; }
     .cal-btn-apple { background: #0F1111; }
     .cal-loading { font-size: 13px; color: #888C8C; padding: 8px 0; }
+    .no-credits-info { background: #FFF4E6; border-radius: 10px; padding: 16px; margin-top: 12px; text-align: left; }
+    .no-credits-info .nc-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #888C8C; margin-bottom: 8px; }
+    .no-credits-info a { color: #146EB4; font-weight: 600; text-decoration: none; }
+    .no-credits-info a:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
@@ -2989,6 +2993,8 @@ async function bkSubmitBooking() {
 
     if (result.success) {
       bkShowConfirmation(payload, result);
+    } else if (result.noCredits) {
+      bkShowNoCreditsPopup();
     } else {
       var msg = result.message || 'Booking could not be completed.';
       bkShowBookingError(msg);
@@ -3050,6 +3056,46 @@ function bkShowBookingError(msg) {
 
   document.getElementById('submitBtn').disabled = false;
   document.getElementById('submitText').textContent = 'Confirm Booking';
+}
+
+function bkShowNoCreditsPopup() {
+  var WEBSITE_MAP = {
+    'stretch-zone-westborough': 'https://www.stretchzone.com/locations/westborough-ma',
+    'stretch-zone-west-boylston': 'https://www.stretchzone.com/locations/west-boylston-ma',
+    'stretchlab-carlsbad': 'https://www.stretchlab.com/location/carlsbad',
+    'stretch-zone-dfw': 'https://www.stretchzone.com/locations/southlake-tx',
+    'stretch-zone-baton-rouge': 'https://www.stretchzone.com/locations/bocage-la',
+  };
+  var PHONE_MAP = {
+    'stretch-zone-westborough': '(508) 329-1134',
+    'stretch-zone-west-boylston': '(774) 261-4238',
+    'stretchlab-carlsbad': '(760) 283-7126',
+    'stretch-zone-dfw': '(817) 612-1666',
+    'stretch-zone-baton-rouge': '(225) 456-2734',
+  };
+  var slug = bkCurrentLocationSlug || '';
+  var phone = PHONE_MAP[slug] || '';
+  var website = WEBSITE_MAP[slug] || '';
+  var locName = (bkCurrentLocation && bkCurrentLocation.displayName) || '';
+
+  var calEl = document.getElementById('calendarButtons');
+  if (calEl) calEl.innerHTML = '';
+
+  document.getElementById('bkPopupTitle').textContent = 'No Session Credits';
+  var detail = 'You don\'t have any remaining session credits at <strong>' + locName + '</strong>.';
+  detail += '<div class="no-credits-info"><div class="nc-label">Purchase More Sessions</div>';
+  if (phone) detail += '&#128222; Call us: <strong>' + phone + '</strong><br>';
+  if (website) detail += '&#127760; Visit: <a href="' + website + '" target="_blank" rel="noopener">' + locName + ' Website</a><br>';
+  if (!phone && !website) detail += 'Please contact the studio directly to purchase more sessions.';
+  detail += '</div>';
+
+  document.getElementById('bkPopupDetail').innerHTML = detail;
+  document.getElementById('bkPopupOverlay').classList.add('visible');
+
+  var btn = document.getElementById('submitBtn');
+  if (btn) { btn.disabled = false; }
+  var txt = document.getElementById('submitText');
+  if (txt) { txt.textContent = 'Confirm Booking'; }
 }
 
 // Fallback slots
