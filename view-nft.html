@@ -2483,7 +2483,7 @@ function bkBuildDateCarousel() {
       '<span class="date-num">' + d.getDate() + '</span>' +
       '<span class="date-month">' + months[d.getMonth()] + '</span>';
 
-    var dateStr = d.toISOString().split('T')[0];
+    var dateStr = bkToLocalDateStr(d);
     item.dataset.date = dateStr;
 
     if (bkSelectedDate === dateStr) {
@@ -2984,6 +2984,13 @@ function bkGetLocationNow() {
   var now = new Date();
   var tzString = now.toLocaleString('en-US', { timeZone: bkCurrentLocation.timezone });
   return new Date(tzString);
+}
+
+function bkToLocalDateStr(d) {
+  var y = d.getFullYear();
+  var m = ('0' + (d.getMonth() + 1)).slice(-2);
+  var day = ('0' + d.getDate()).slice(-2);
+  return y + '-' + m + '-' + day;
 }
 
 function bkFormatPhone(phone) {
