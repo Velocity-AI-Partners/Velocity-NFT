@@ -1699,104 +1699,113 @@ const TIERS = {
 // ═══════════════════════════════════════════════
 //  LOCATION CONFIG
 // ═══════════════════════════════════════════════
-const LOCATIONS = {
-  'westborough': {
-    gymName: 'Stretch Zone Westborough',
-    brand: 'Stretch Zone',
-    shortLocation: 'Westborough, MA',
-    phone: '(508) 571-4800',
-    phoneTel: '+15085714800',
-    address: '131 Turnpike Rd, Westborough, MA 01581',
-    website: 'https://www.stretchzone.com/locations/westborough',
-    watermark: 'STRETCH ZONE',
-    activity: 'wellness'
-  },
-  'west-boylston': {
-    gymName: 'Stretch Zone West Boylston',
-    brand: 'Stretch Zone',
-    shortLocation: 'West Boylston, MA',
-    phone: '(774) 261-4238',
-    phoneTel: '+17742614238',
-    address: '342 W Boylston St, West Boylston, MA 01583',
-    website: 'https://www.stretchzone.com/locations/west-boylston-ma',
-    watermark: 'STRETCH ZONE',
-    activity: 'wellness'
-  },
-  'carlsbad': {
-    gymName: 'StretchLab Carlsbad',
-    brand: 'StretchLab',
-    shortLocation: 'Carlsbad, CA',
-    phone: '(760) 283-7126',
-    phoneTel: '+17602837126',
-    address: '1850 Marron Rd, Suite 102, Carlsbad, CA 92008',
-    website: 'https://www.stretchlab.com/location/carlsbadnorthcoast',
-    watermark: 'STRETCHLAB',
-    activity: 'wellness'
-  },
-  'integrated-martial-arts-westborough': {
-    gymName: 'IMA Westborough',
-    brand: 'Integrated Martial Arts',
-    shortLocation: 'Westborough, MA',
-    phone: '(774) 772-4759',
-    phoneTel: '+17747724759',
-    address: '227 Turnpike Rd, Suite C, Westborough, MA 01581',
-    website: 'https://integratedmartialarts.com',
-    watermark: 'IMA FITNESS',
-    activity: 'training'
-  },
-  'worcester': {
-    gymName: 'IMA Worcester',
-    brand: 'Integrated Martial Arts',
-    shortLocation: 'Worcester, MA',
-    phone: '(508) 251-9469',
-    phoneTel: '+15082519469',
-    address: '342A W Boylston St, West Boylston, MA 01583',
-    website: 'https://imaworcester.com',
-    watermark: 'IMA FITNESS',
-    activity: 'training'
-  },
-  'dfw': {
-    gymName: 'Stretch Zone Southlake',
-    brand: 'Stretch Zone',
-    shortLocation: 'Southlake, TX',
-    phone: '(817) 612-1666',
-    phoneTel: '+18176121666',
-    address: '405 N Carroll Ave, Southlake, TX 76092',
-    website: 'https://www.stretchzone.com/locations/southlake-tx',
-    watermark: 'STRETCH ZONE',
-    activity: 'wellness'
-  },
-  'baton-rouge': {
-    gymName: 'Stretch Zone Bocage',
-    brand: 'Stretch Zone',
-    shortLocation: 'Baton Rouge, LA',
-    phone: '(225) 456-2734',
-    phoneTel: '+12254562734',
-    address: '7575 Jefferson Hwy, Suite E, Baton Rouge, LA 70806',
-    website: 'https://www.stretchzone.com/locations/bocage-la',
-    watermark: 'STRETCH ZONE',
-    activity: 'wellness'
-  }
+// Primary keys are the full slugs used by the current system.
+// Short slugs kept as aliases for old bit.ly links.
+const SZ_WESTBOROUGH = {
+  gymName: 'Stretch Zone Westborough',
+  brand: 'Stretch Zone',
+  shortLocation: 'Westborough, MA',
+  phone: '(508) 329-1134',
+  phoneTel: '+15083291134',
+  address: '131 Turnpike Rd, Westborough, MA 01581',
+  website: 'https://www.stretchzone.com/locations/westborough',
+  watermark: 'STRETCH ZONE',
+  activity: 'wellness'
+};
+const SZ_WEST_BOYLSTON = {
+  gymName: 'Stretch Zone West Boylston',
+  brand: 'Stretch Zone',
+  shortLocation: 'West Boylston, MA',
+  phone: '(774) 261-4238',
+  phoneTel: '+17742614238',
+  address: '342 W Boylston St, West Boylston, MA 01583',
+  website: 'https://www.stretchzone.com/locations/west-boylston-ma',
+  watermark: 'STRETCH ZONE',
+  activity: 'wellness'
+};
+const SL_CARLSBAD = {
+  gymName: 'StretchLab Carlsbad',
+  brand: 'StretchLab',
+  shortLocation: 'Carlsbad, CA',
+  phone: '(760) 283-7126',
+  phoneTel: '+17602837126',
+  address: '1850 Marron Rd, Suite 102, Carlsbad, CA 92008',
+  website: 'https://www.stretchlab.com/location/carlsbadnorthcoast',
+  watermark: 'STRETCHLAB',
+  activity: 'wellness'
+};
+const IMA_WESTBOROUGH = {
+  gymName: 'IMA Westborough',
+  brand: 'Integrated Martial Arts',
+  shortLocation: 'Westborough, MA',
+  phone: '(774) 772-4759',
+  phoneTel: '+17747724759',
+  address: '227 Turnpike Rd, Suite C, Westborough, MA 01581',
+  website: 'https://integratedmartialarts.com',
+  watermark: 'IMA FITNESS',
+  activity: 'training'
+};
+const IMA_WORCESTER = {
+  gymName: 'IMA Worcester',
+  brand: 'Integrated Martial Arts',
+  shortLocation: 'Worcester, MA',
+  phone: '(508) 251-9469',
+  phoneTel: '+15082519469',
+  address: '342A W Boylston St, West Boylston, MA 01583',
+  website: 'https://imaworcester.com',
+  watermark: 'IMA FITNESS',
+  activity: 'training'
+};
+const SZ_DFW = {
+  gymName: 'Stretch Zone Southlake',
+  brand: 'Stretch Zone',
+  shortLocation: 'Southlake, TX',
+  phone: '(817) 612-1666',
+  phoneTel: '+18176121666',
+  address: '405 N Carroll Ave, Southlake, TX 76092',
+  website: 'https://www.stretchzone.com/locations/southlake-tx',
+  watermark: 'STRETCH ZONE',
+  activity: 'wellness'
+};
+const SZ_BATON_ROUGE = {
+  gymName: 'Stretch Zone Bocage',
+  brand: 'Stretch Zone',
+  shortLocation: 'Baton Rouge, LA',
+  phone: '(225) 456-2734',
+  phoneTel: '+12254562734',
+  address: '7575 Jefferson Hwy, Suite E, Baton Rouge, LA 70806',
+  website: 'https://www.stretchzone.com/locations/bocage-la',
+  watermark: 'STRETCH ZONE',
+  activity: 'wellness'
 };
 
-// Alias map: full slugs used in URLs -> short keys in LOCATIONS
-const LOCATION_ALIASES = {
-  'stretch-zone-westborough': 'westborough',
-  'stretch-zone-west-boylston': 'west-boylston',
-  'stretchlab-carlsbad': 'carlsbad',
-  'stretch-zone-dfw': 'dfw',
-  'stretch-zone-baton-rouge': 'baton-rouge',
-  'integrated-martial-arts-worcester': 'worcester',
-  // integrated-martial-arts-westborough already matches the key directly
+const LOCATIONS = {
+  // Full slugs (primary, used by current system)
+  'stretch-zone-westborough': SZ_WESTBOROUGH,
+  'stretch-zone-west-boylston': SZ_WEST_BOYLSTON,
+  'stretchlab-carlsbad': SL_CARLSBAD,
+  'integrated-martial-arts-westborough': IMA_WESTBOROUGH,
+  'integrated-martial-arts-worcester': IMA_WORCESTER,
+  'stretch-zone-dfw': SZ_DFW,
+  'stretch-zone-baton-rouge': SZ_BATON_ROUGE,
+  // Short slugs (backward compat for old bit.ly links)
+  'westborough': SZ_WESTBOROUGH,
+  'west-boylston': SZ_WEST_BOYLSTON,
+  'carlsbad': SL_CARLSBAD,
+  'worcester': IMA_WORCESTER,
+  'dfw': SZ_DFW,
+  'baton-rouge': SZ_BATON_ROUGE,
+  // IMA short slugs (old links used these)
+  'ima-westborough': IMA_WESTBOROUGH,
+  'ima-worcester': IMA_WORCESTER,
 };
 
 // Default location fallback
-const DEFAULT_LOCATION = 'westborough';
+const DEFAULT_LOCATION = 'stretch-zone-westborough';
 
 function getLocation(locSlug) {
   if (!locSlug) return LOCATIONS[DEFAULT_LOCATION];
-  // Try direct match first, then alias, then default
-  return LOCATIONS[locSlug] || LOCATIONS[LOCATION_ALIASES[locSlug]] || LOCATIONS[DEFAULT_LOCATION];
+  return LOCATIONS[locSlug] || LOCATIONS[DEFAULT_LOCATION];
 }
 
 // ═══════════════════════════════════════════════
