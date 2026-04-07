@@ -1779,11 +1779,24 @@ const LOCATIONS = {
   }
 };
 
+// Alias map: full slugs used in URLs -> short keys in LOCATIONS
+const LOCATION_ALIASES = {
+  'stretch-zone-westborough': 'westborough',
+  'stretch-zone-west-boylston': 'west-boylston',
+  'stretchlab-carlsbad': 'carlsbad',
+  'stretch-zone-dfw': 'dfw',
+  'stretch-zone-baton-rouge': 'baton-rouge',
+  'integrated-martial-arts-worcester': 'worcester',
+  // integrated-martial-arts-westborough already matches the key directly
+};
+
 // Default location fallback
 const DEFAULT_LOCATION = 'westborough';
 
 function getLocation(locSlug) {
-  return LOCATIONS[locSlug] || LOCATIONS[DEFAULT_LOCATION];
+  if (!locSlug) return LOCATIONS[DEFAULT_LOCATION];
+  // Try direct match first, then alias, then default
+  return LOCATIONS[locSlug] || LOCATIONS[LOCATION_ALIASES[locSlug]] || LOCATIONS[DEFAULT_LOCATION];
 }
 
 // ═══════════════════════════════════════════════
@@ -3215,14 +3228,19 @@ function bkEscapeHtml(str) {
 
   render(data);
 
-  // Fetch all wallet NFTs from Crossmint and render collection
-  // Use email from URL, or fall back to default recipient wallet
-  var walletEmail = data.email || 'sirtobiaswade@gmail.com';
+  // Fetch wallet NFTs from Crossmint using the member's email
+  // If no email provided, show empty gallery (never show another person's awards)
+  var walletEmail = data.email || '';
   var grid = document.getElementById('galleryGrid');
-  grid.innerHTML = '<div class="gallery-loading"><div class="spinner"></div><br>Loading your collection...</div>';
-  fetchWalletNFTs(walletEmail).then(function(nfts) {
-    renderGallery(nfts, data.milestone, data.image, data.nftId);
-  });
+  if (walletEmail) {
+    grid.innerHTML = '<div class="gallery-loading"><div class="spinner"></div><br>Loading your collection...</div>';
+    fetchWalletNFTs(walletEmail).then(function(nfts) {
+      renderGallery(nfts, data.milestone, data.image, data.nftId);
+    });
+  } else {
+    // No email: render gallery with only the current award, no previous awards
+    renderGallery([], data.milestone, data.image, data.nftId);
+  }
 
   if (!window.location.search || window.location.search === '?') {
     document.getElementById('artworkWrap').style.cursor = 'pointer';
